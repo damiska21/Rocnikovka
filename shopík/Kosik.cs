@@ -8,5 +8,13 @@ namespace shopík
 {
     internal class Kosik
     {
+        public Kosik(int pocetItemu)
+        {
+
+        }
+        public string item
+        {
+            get;
+        }
     }
 }

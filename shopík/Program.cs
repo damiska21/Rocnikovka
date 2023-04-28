@@ -9,7 +9,7 @@ namespace shopík
 {
     internal class Program
     {
-        static void Main(string[] args) //PRACUJU NA RADEK OFFSETU
+        static void Main(string[] args)
         {
             /*  Všechny komentáře jsou čistě pro mě, na týhle práci budu dělat tak dlouho, že budu pravdědpodobně zapomínat co jak funguje :D
              *  Kódem se klidně inspirujte, na vlastní nebezpečí ;)
@@ -44,7 +44,7 @@ namespace shopík
             Menu:
             //MENU
             string[] menuItems = { "Nakupovat", "Účet", "Vypnout obchod" };
-            int menuOutput = DecisionMaker(3, menuItems, "0", 0, ConsoleColor.White, ConsoleColor.Blue, items);
+            int menuOutput = DecisionMaker(3, menuItems, "0", 0, ConsoleColor.White, ConsoleColor.Blue, items, 1);
             switch (menuOutput)
             {
                 case 0:
@@ -231,6 +231,10 @@ namespace shopík
         static public int SingleItemDisplay(string[,] items, int currentItem)
         {
             //TADY JSEM SKONČIL
+
+            Console.WriteLine(items[currentItem, 0]);
+            Console.WriteLine("");
+            Console.WriteLine(items[currentItem, 1]);
             return 0;
         }
         static public void VypisovacJmen(string name)
@@ -252,24 +256,34 @@ namespace shopík
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write("   |   ");
         }
-        static public int[] Ucet(bool loggedin, string[,] items)
+        static public int[] Ucet(bool loggedin, string[,] items) //nedodělaný
         {
+            int[] output = new int[4];
             if (!loggedin)
             {
                 Console.WriteLine("Přihlášení");
                 string[] menuItems = { "Přihlášení (mám účet)", "Registrace (nemám účet)", "Zpět do obchodu" };
-                int menuOutput = DecisionMaker(3, menuItems, "0", 0, ConsoleColor.White, ConsoleColor.Blue, items);
+                int menuOutput = DecisionMaker(3, menuItems, "ÚČET", 1, ConsoleColor.White, ConsoleColor.Blue, items, 0); Console.Clear();
                 switch (menuOutput)
                 {
                     case 0:
+                        Console.WriteLine("PŘIHLÁŠENÍ");
                         Console.Write("Přihlašovací jméno: ");
                         string user = Console.ReadLine();
                         break;
+                    case 1:
+                        Console.WriteLine("REGISTRACE");
+                        Console.WriteLine("Uživatelské jméno budete používat pro přihlášení");
+                        Console.Write("Vaše uživatelské jméno: ");
+                        string newuser = Console.ReadLine();
+                        break;
+                    case 2:
+                        return output;
                     default:
                         break;
                 }
             }
-            int[] output = new int[4];
+            
             return output;
         }
         //0 je černá, 1 bílá, 2 modrá, 3 žlutá, 4 zelená, 5 tyrkisová, jakýkoli písmenko je červená
@@ -495,7 +509,7 @@ namespace shopík
         }
 
         //ukradenej z mýho jinýho projektu. Jdou s ním dělat menu či dialogy, je super
-        public static int DecisionMaker(int decisionNum, string[] decisions, string otazka, int vertical, ConsoleColor mainColor, ConsoleColor highlightColor, string[,] items)
+        public static int DecisionMaker(int decisionNum, string[] decisions, string otazka, int vertical, ConsoleColor mainColor, ConsoleColor highlightColor, string[,] items, int vypis)
         {
             int currentDecision = 0;
             if (vertical == 1)//vertical dělá lištu, 1 dělá menu, 0 lištu
@@ -553,7 +567,10 @@ namespace shopík
                             Console.Write("  " + decisions[i]);
                         }
                     }
-                    Vypis(items, 0, -1);
+                    if (vypis == 1)
+                    {
+                        Vypis(items, 0, -1);
+                    }
                     var input = Console.ReadKey();
                     if (input.Key == ConsoleKey.RightArrow && currentDecision < decisionNum - 1)
                     {
