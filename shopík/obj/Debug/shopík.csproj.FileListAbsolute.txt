@@ -1,0 +1,16 @@
+C:\Users\rohacekd\Desktop\shopík\shopík\bin\Debug\shopík.exe.config
+C:\Users\rohacekd\Desktop\shopík\shopík\bin\Debug\shopík.exe
+C:\Users\rohacekd\Desktop\shopík\shopík\bin\Debug\shopík.pdb
+C:\Users\rohacekd\Desktop\shopík\shopík\obj\Debug\shopík.csproj.AssemblyReference.cache
+C:\Users\rohacekd\Desktop\shopík\shopík\obj\Debug\shopík.csproj.SuggestedBindingRedirects.cache
+C:\Users\rohacekd\Desktop\shopík\shopík\obj\Debug\shopík.csproj.CoreCompileInputs.cache
+C:\Users\rohacekd\Desktop\shopík\shopík\obj\Debug\shopík.exe
+C:\Users\rohacekd\Desktop\shopík\shopík\obj\Debug\shopík.pdb
+C:\Users\rohac\Desktop\shopík\shopík\bin\Debug\shopík.exe.config
+C:\Users\rohac\Desktop\shopík\shopík\bin\Debug\shopík.exe
+C:\Users\rohac\Desktop\shopík\shopík\bin\Debug\shopík.pdb
+C:\Users\rohac\Desktop\shopík\shopík\obj\Debug\shopík.csproj.AssemblyReference.cache
+C:\Users\rohac\Desktop\shopík\shopík\obj\Debug\shopík.csproj.SuggestedBindingRedirects.cache
+C:\Users\rohac\Desktop\shopík\shopík\obj\Debug\shopík.csproj.CoreCompileInputs.cache
+C:\Users\rohac\Desktop\shopík\shopík\obj\Debug\shopík.exe
+C:\Users\rohac\Desktop\shopík\shopík\obj\Debug\shopík.pdb
