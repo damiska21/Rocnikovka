@@ -14,3 +14,11 @@ C:\Users\rohac\Desktop\shopík\shopík\obj\Debug\shopík.csproj.SuggestedBinding
 C:\Users\rohac\Desktop\shopík\shopík\obj\Debug\shopík.csproj.CoreCompileInputs.cache
 C:\Users\rohac\Desktop\shopík\shopík\obj\Debug\shopík.exe
 C:\Users\rohac\Desktop\shopík\shopík\obj\Debug\shopík.pdb
+C:\Users\rohac\Documents\GitHub\Rocnikovka\shopík\bin\Debug\shopík.exe.config
+C:\Users\rohac\Documents\GitHub\Rocnikovka\shopík\bin\Debug\shopík.exe
+C:\Users\rohac\Documents\GitHub\Rocnikovka\shopík\bin\Debug\shopík.pdb
+C:\Users\rohac\Documents\GitHub\Rocnikovka\shopík\obj\Debug\shopík.csproj.AssemblyReference.cache
+C:\Users\rohac\Documents\GitHub\Rocnikovka\shopík\obj\Debug\shopík.csproj.SuggestedBindingRedirects.cache
+C:\Users\rohac\Documents\GitHub\Rocnikovka\shopík\obj\Debug\shopík.csproj.CoreCompileInputs.cache
+C:\Users\rohac\Documents\GitHub\Rocnikovka\shopík\obj\Debug\shopík.exe
+C:\Users\rohac\Documents\GitHub\Rocnikovka\shopík\obj\Debug\shopík.pdb

@@ -24,7 +24,8 @@ namespace shopík
             stock = Stock;
             art = Art;
         }
-        public string Name {
+        public string Name
+        {
             get { return name; }
             set { name = value; }
         }
