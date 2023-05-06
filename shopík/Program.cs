@@ -27,7 +27,8 @@ namespace shopík
             //jmeno_popisek_cena_pocet-na-sklade_artík
             //[0]     [1]    [2]       [3]        [4]
             string[] database = import.Split(';');
-            string[,] items = new string[database.Length, 5];
+            Item[] items = new Item[database.Length];
+            string name = ""; string desc = ""; int price = 0; int stock = 0; string art = "";
             for (int i = 0; i < items.Length; i++) //vezme save soubor a rozdělí ho na dvojrozměrné pole: 0 (i) jsou itemy, 1 (j ) jsou jejich properties
             {
                 try
@@ -35,8 +36,28 @@ namespace shopík
                         string[] mrda = database[i].Split('_');
                         for (int j = 0; j < mrda.Length; j++)
                         {
-                            items[i, j] = mrda[j];
+                        if (j == 0)
+                        {
+                            name = mrda[j];
                         }
+                        else if (j == 1)
+                        {
+                            desc = mrda[j];
+                        }
+                        else if (j ==2)
+                        {
+                            price = Convert.ToInt32(mrda[j]);
+                        }
+                        else if (j == 3)
+                        {
+                            stock = Convert.ToInt32(mrda[j]);
+                        }
+                        else if (j ==4)
+                        {
+                            art = mrda[j];
+                        }
+                        }
+                    items[i] = new Item(name, desc, price, stock, art);
 
                 }
                 catch { } //poslední index je mimo z nějakého důvodu
@@ -61,7 +82,7 @@ namespace shopík
             }
 
         }
-        static public int Shop(string[,] items)
+        static public int Shop(Item[] items)
         {
             int currentItem = 0;
             int lastItem = items.GetLength(0) - 1;
@@ -74,8 +95,8 @@ namespace shopík
 
             int pocetRadku = ((items.GetLength(0) - 1) / 3); //počítá řádky
 
-            int posledniPlnyRadek = pocetRadku;
-            if (konecRadku > 0) { pocetRadku++; posledniPlnyRadek = pocetRadku - 1; } //přidá se jeden řádek, pokud je nějaký přebytek
+            /*int posledniPlnyRadek = pocetRadku; tohle se k ničemu nepoužívá, ale jsem moc paranoidní to smazat
+            if (konecRadku > 0) { pocetRadku++; posledniPlnyRadek = pocetRadku - 1; } //přidá se jeden řádek, pokud je nějaký přebytek*/
 
 
             while (true)
@@ -138,7 +159,7 @@ namespace shopík
             return 1;
         }
         //radekOffset je kolikátý řádek se zobrazuje první currentItem je to co se bude highlitovat
-        static public int Vypis(string[,] items, int radekOffset, int currentItem)
+        static public int Vypis(Item[] items, int radekOffset, int currentItem)
         {
             int itemNum = (items.GetLength(0) - 1);//getlength 0 je počet itemů, 1 definice itemu
             int konecRadku = (itemNum % 3);//kolik itemů je na posledním řádku
@@ -169,21 +190,21 @@ namespace shopík
                     Console.WriteLine("");
                     Console.Write("       ");
                     if (m == currentItem) {Console.ForegroundColor = ConsoleColor.Blue;}
-                    VypisovacJmen(items[m, 0]); if (m+1 == currentItem) { Console.ForegroundColor = ConsoleColor.Blue; }
-                    VypisovacJmen(items[m + 1, 0]); if (m+2 == currentItem) { Console.ForegroundColor = ConsoleColor.Blue; }
-                    VypisovacJmen(items[m + 2, 0]); Console.ForegroundColor = ConsoleColor.White;
+                    VypisovacJmen(items[m].Name); if (m+1 == currentItem) { Console.ForegroundColor = ConsoleColor.Blue; }
+                    VypisovacJmen(items[m + 1].Name); if (m+2 == currentItem) { Console.ForegroundColor = ConsoleColor.Blue; }
+                    VypisovacJmen(items[m + 2].Name); Console.ForegroundColor = ConsoleColor.White;
                     
                     Console.WriteLine("");
-                    Obrazky(items[m, 4], items[m+1, 4], items[m+2, 4], 3);
+                    Obrazky(items[m].Art, items[m+1].Art, items[m+2].Art, 3);
 
                     Console.Write("\r\n       ");
-                    VypisovacJmen(items[m, 1]);
-                    VypisovacJmen(items[m + 1, 1]);
-                    VypisovacJmen(items[m + 2, 1]);
+                    VypisovacJmen(items[m].Desc);
+                    VypisovacJmen(items[m + 1].Desc);
+                    VypisovacJmen(items[m + 2].Desc);
                     Console.Write("\r\n       ");
-                    VypisovacJmen(items[m, 2] + " Kč");
-                    VypisovacJmen(items[m + 1, 2] + " Kč");
-                    VypisovacJmen(items[m + 2, 2] + " Kč");
+                    VypisovacJmen(items[m].Price + " Kč");
+                    VypisovacJmen(items[m + 1].Price + " Kč");
+                    VypisovacJmen(items[m + 2].Price + " Kč");
                     Console.WriteLine("");
                     }
                 else //výpis 1/2 produktů
@@ -194,17 +215,17 @@ namespace shopík
                     if (konecRadku == 2)
                     {
                         if (m == currentItem) { Console.ForegroundColor = ConsoleColor.Blue; }
-                        VypisovacJmen(items[m, 0]); if (m + 1 == currentItem) { Console.ForegroundColor = ConsoleColor.Blue; }
-                        VypisovacJmen(items[m+1, 0]);
+                        VypisovacJmen(items[m].Name); if (m + 1 == currentItem) { Console.ForegroundColor = ConsoleColor.Blue; }
+                        VypisovacJmen(items[m+1].Name);
                         Console.WriteLine("");
-                        Obrazky(items[m, 4], items[m + 1, 4], "0", 2); //pokud jsou potřeba vypsat pouze dva, třetí je prázdný
+                        Obrazky(items[m].Art, items[m + 1].Art, "0", 2); //pokud jsou potřeba vypsat pouze dva, třetí je prázdný
 
                         Console.Write("\r\n       ");
-                        VypisovacJmen(items[m, 1]); 
-                        VypisovacJmen(items[m + 1, 1]);
+                        VypisovacJmen(items[m].Desc); 
+                        VypisovacJmen(items[m + 1].Desc);
                         Console.Write("\r\n       ");
-                        VypisovacJmen(items[m, 2] + " Kč");
-                        VypisovacJmen(items[m + 1, 2] + " Kč");
+                        VypisovacJmen(items[m].Price + " Kč");
+                        VypisovacJmen(items[m + 1].Price + " Kč");
                         Console.WriteLine("");
                     }
                     else
@@ -212,14 +233,14 @@ namespace shopík
                         try
                         {
                             if (m == currentItem) { Console.ForegroundColor = ConsoleColor.Blue; }
-                            VypisovacJmen(items[m, 0]);
+                            VypisovacJmen(items[m].Name);
                             Console.WriteLine("");
-                            Obrazky(items[m, 4], "0", "0", 1); //pokud je potřeba vypsat jenom jeden
+                            Obrazky(items[m].Art, "0", "0", 1); //pokud je potřeba vypsat jenom jeden
 
                             Console.Write("\r\n       ");
-                            VypisovacJmen(items[m, 1]);
+                            VypisovacJmen(items[m].Desc);
                             Console.Write("\r\n       ");
-                            VypisovacJmen(items[m, 2] + " Kč");
+                            VypisovacJmen(items[m].Price + " Kč");
                             Console.WriteLine("");
                         }
                         catch { Console.WriteLine("Byl vypsán jenom jeden item."); }
@@ -228,13 +249,10 @@ namespace shopík
             }
             return radekOffset;
         }
-        static public int SingleItemDisplay(string[,] items, int currentItem)
+        static public int SingleItemDisplay(Item[] items, int currentItem)
         {
             //TADY JSEM SKONČIL
 
-            Console.WriteLine(items[currentItem, 0]);
-            Console.WriteLine("");
-            Console.WriteLine(items[currentItem, 1]);
             return 0;
         }
         static public void VypisovacJmen(string name)
@@ -256,7 +274,7 @@ namespace shopík
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write("   |   ");
         }
-        static public int[] Ucet(bool loggedin, string[,] items) //nedodělaný
+        static public int[] Ucet(bool loggedin, Item[] items) //nedodělaný
         {
             int[] output = new int[4];
             if (!loggedin)
@@ -509,7 +527,7 @@ namespace shopík
         }
 
         //ukradenej z mýho jinýho projektu. Jdou s ním dělat menu či dialogy, je super
-        public static int DecisionMaker(int decisionNum, string[] decisions, string otazka, int vertical, ConsoleColor mainColor, ConsoleColor highlightColor, string[,] items, int vypis)
+        public static int DecisionMaker(int decisionNum, string[] decisions, string otazka, int vertical, ConsoleColor mainColor, ConsoleColor highlightColor, Item[] items, int vypis)
         {
             int currentDecision = 0;
             if (vertical == 1)//vertical dělá lištu, 1 dělá menu, 0 lištu
