@@ -6,10 +6,10 @@ Co funguje:
   vybírání mezi produkty
   menu (výběr mezi nákupem, košíkem, účtem či vypnutím)
   obrázky produktů
+  itemy jsou v extra classe
   
 Na čem se pracuje:
   Single Item Display
-  revamp produktů aby byli na special classe
   
 Co není:
   košík
