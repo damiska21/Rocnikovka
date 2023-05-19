@@ -4,6 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Dynamic;
+using static System.Net.Mime.MediaTypeNames;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace shopík
 {
@@ -18,16 +22,15 @@ namespace shopík
             Console.ForegroundColor = ConsoleColor.White;
             Console.WindowHeight = 40;
 
-            bool loggedin = false;
 
             //dočasný import z filu
-            string import = File.ReadAllText("save.txt", Encoding.UTF8).Replace("\r\n", ""); //replace aby kód nenačítal entery v .txt souboru
+            string import = File.ReadAllText("save.txt", Encoding.UTF8).Replace("\r\n", "").Replace("\n", ""); //replace aby kód nenačítal entery v .txt souboru
 
             //ZPŮSOB ZAPISOVÁNÍ PRODUKTŮ
             //jmeno_popisek_cena_pocet-na-sklade_artík
             //[0]     [1]    [2]       [3]        [4]
             string[] database = import.Split(';');
-            Item[] items = new Item[database.Length];
+            Item[] items = new Item[database.Length]; int[] kosik = new int[database.Length];
             string name = ""; string desc = ""; int price = 0; int stock = 0; string art = "";
             for (int i = 0; i < items.Length; i++) //vezme save soubor a rozdělí ho na dvojrozměrné pole: 0 (i) jsou itemy, 1 (j ) jsou jejich properties
             {
@@ -64,15 +67,15 @@ namespace shopík
             }
             Menu:
             //MENU
-            string[] menuItems = { "Nakupovat", "Účet", "Vypnout obchod" };
+            string[] menuItems = { "Nakupovat", "Košík", "Vypnout obchod" };
             int menuOutput = DecisionMaker(3, menuItems, "0", 0, ConsoleColor.White, ConsoleColor.Blue, items, 1);
             switch (menuOutput)
             {
                 case 0:
-                    Shop(items);
+                    Shop(items, kosik);
                     goto Menu;
                 case 1:
-                    Ucet(loggedin, items);
+                    kosik = Kosik(items, kosik);
                     goto Menu;
                 case 2:
                     Environment.Exit(0);
@@ -82,7 +85,7 @@ namespace shopík
             }
 
         }
-        static public int Shop(Item[] items)
+        static public int Shop(Item[] items, int[] kosik)
         {
             int currentItem = 0;
             int lastItem = items.GetLength(0) - 1;
@@ -102,7 +105,7 @@ namespace shopík
             while (true)
             {
                 Console.Clear(); Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine("     Nakupovat     Nastavení     Vypnout Obchod     [stisknutím L se vrátíte do lišty]");
+                Console.WriteLine("     Nakupovat     Košík     Vypnout Obchod     [stisknutím L se vrátíte do lišty]");
                 radekOffset = Vypis(items, radekOffset, currentItem);
                 keydown = Console.ReadKey();
                 switch (keydown.Key)
@@ -148,6 +151,7 @@ namespace shopík
                         }
                         break;
                     case ConsoleKey.Enter:
+                        SingleItemDisplay(items, currentItem, kosik);
                         break;
                     case ConsoleKey.L:
                         goto Exit;
@@ -249,11 +253,91 @@ namespace shopík
             }
             return radekOffset;
         }
-        static public int SingleItemDisplay(Item[] items, int currentItem)
+        static public int[] SingleItemDisplay(Item[] items, int currentItem, int[] kosik)
         {
-            //TADY JSEM SKONČIL
+        Buy:
+            ConsoleKeyInfo input;
+            int currentDecision = 0;
+            string[] nvm = new string[2]; nvm[0] = "Koupit produkt"; nvm[1] = "Zpět do obchodu";
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("\n     " + items[currentItem].Name);
+                Console.WriteLine("\n     " + items[currentItem].Desc + "\n");
+                Obrazky(items[currentItem].Art, " ", " ", 1); Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("\n\n     " + items[currentItem].Price + " Kč");
+                if (items[currentItem].Stock == 0)
+                {
+                    Console.WriteLine("\n     Vyprodáno!");
+                }else
+                {
+                    Console.WriteLine("\n     Počet na skladě: " + items[currentItem].Stock);
+                }
 
-            return 0;
+                
+                for (int i = 0; i < 2; i++)
+                {
+                    if (currentDecision == i)
+                    {
+                        Console.Write("\n> ");
+                    }else { Console.Write("\n  "); }
+                    Console.WriteLine(nvm[i]);
+                }
+                input = Console.ReadKey();
+                switch (input.Key)
+                {
+                    case ConsoleKey.Enter:
+                        goto Bb;
+                    case ConsoleKey.UpArrow:
+                        if (currentDecision == 1)
+                        {
+                            currentDecision--;
+                        }
+                        break;
+                    case ConsoleKey.DownArrow:
+                        if (currentDecision == 0)
+                        {
+                            currentDecision++;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            Bb:
+            if (currentDecision == 0)
+            {
+                
+                int buy = 1;
+                try
+                {
+                    Console.Write("\r\nKolik kusů by jsi chtěl/a zakoupit? ");
+                    buy = Convert.ToInt32(Console.ReadLine());
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Nezadali jste číslo!");
+                    Console.WriteLine("[space]");
+                    Console.ReadKey();
+                    goto Buy;
+                }
+                if (buy <= items[currentItem].Stock && buy >= 1)
+                {
+                    kosik[currentItem] += buy;
+                    items[currentItem].Stock -= buy;
+                    Console.WriteLine("");
+                    Console.WriteLine("Předmět byl úspěšně přidán ko košíku!");
+                    Console.WriteLine("[stiskněte enter pro návrat do nabídky]");
+                    Console.ReadKey();
+                }else
+                {
+                    Console.WriteLine("Tolik kusů nemáme na skladě nebo tolik kusů nemůžeš objednat!");
+                    Console.WriteLine("[space]");
+                    Console.ReadKey();
+                    goto Buy;
+                }
+            }
+            return kosik;
         }
         static public void VypisovacJmen(string name)
         {
@@ -274,37 +358,86 @@ namespace shopík
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write("   |   ");
         }
-        static public int[] Ucet(bool loggedin, Item[] items) //nedodělaný
+        static public int[] Kosik(Item[] items, int[] kosik) //nedodělaný
         {
-            int[] output = new int[4];
-            if (!loggedin)
+            int currentDecision = 0;
+            while (true)
             {
-                Console.WriteLine("Přihlášení");
-                string[] menuItems = { "Přihlášení (mám účet)", "Registrace (nemám účet)", "Zpět do obchodu" };
-                int menuOutput = DecisionMaker(3, menuItems, "ÚČET", 1, ConsoleColor.White, ConsoleColor.Blue, items, 0); Console.Clear();
-                switch (menuOutput)
+
+                int cena = 0;
+                Console.Clear();
+            bool empty = true;
+            for (int i = 0; i < items.Length; i++)
+            {
+                if (kosik[i] > 0)
                 {
-                    case 0:
-                        Console.WriteLine("PŘIHLÁŠENÍ");
-                        Console.Write("Přihlašovací jméno: ");
-                        string user = Console.ReadLine();
-                        break;
-                    case 1:
-                        Console.WriteLine("REGISTRACE");
-                        Console.WriteLine("Uživatelské jméno budete používat pro přihlášení");
-                        Console.Write("Vaše uživatelské jméno: ");
-                        string newuser = Console.ReadLine();
-                        break;
-                    case 2:
-                        return output;
-                    default:
-                        break;
+                    Console.WriteLine(i + "    " + items[i].Name + "     Kusů: " + kosik[i] + "      Cena: " + items[i].Price + "\r\n"); empty = false;
+                    cena += items[i].Price * kosik[i];
                 }
             }
-            
-            return output;
+            if (empty)
+            {
+                Console.WriteLine("\r\nNemáte žádný produkt v košíku.");
+                Console.WriteLine("\r\n[stiskněte enter pro návrat do nabídky]");
+
+                Console.ReadKey();return kosik;
+            }
+                Console.WriteLine("Celková cena košíku: " + cena);
+            string[] mm = new string[3]; mm[0] = "Zakoupit produkty"; mm[1] = "Vyprázdnit košík"; mm[2] = "Zpět do obchodu";
+            ConsoleKeyInfo input;
+            for (int i = 0; i < 3; i++)
+            {
+                if (currentDecision == i)
+                {
+                    Console.Write("\n> ");
+                }
+                else { Console.Write("\n  "); }
+                Console.WriteLine(mm[i]);
+            }
+            input = Console.ReadKey();
+            switch (input.Key)
+            {
+                case ConsoleKey.Enter:
+                        if (currentDecision == 0)
+                        {
+                            Console.WriteLine("Produkty byly zakoupeny za " + cena + " Kč.");
+                            Console.WriteLine("Děkujeme za nákup!");
+                            Console.WriteLine("[space]");
+                            Console.ReadKey();
+                            int[] kosiknew = new int[items.Length];
+                            return kosiknew;
+                        }
+                        else if(currentDecision == 1)
+                        {
+                            var fileName = Assembly.GetExecutingAssembly().Location;
+                            System.Diagnostics.Process.Start(fileName);
+                            Environment.Exit(0);
+                        }
+                        else if(currentDecision == 2)
+                        {
+                            int[] kosiknew = new int[items.Length];
+                            return kosiknew;
+                        }
+                        break;
+                case ConsoleKey.UpArrow:
+                    if (currentDecision > 0)
+                    {
+                        currentDecision--;
+                    }
+                    break;
+                case ConsoleKey.DownArrow:
+                    if (currentDecision <2)
+                    {
+                        currentDecision++;
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            }//while loop
         }
-        //0 je černá, 1 bílá, 2 modrá, 3 žlutá, 4 zelená, 5 tyrkisová, jakýkoli písmenko je červená
+        //0 je černá, 1 bílá, 2 modrá, 3 žlutá, 4 zelená, 5 tyrkisová,
         static public void Obrazky(string obrazekNumbers1, string obrazekNumbers2, string obrazekNumbers3, int num)
         {
             int[] obrazekNums1 = obrazekNumbers1.Split(' ').Select(int.Parse).ToArray();//nevim co to dělá, ale funguje to
@@ -345,6 +478,9 @@ namespace shopík
                             case 5:
                                 Console.ForegroundColor = ConsoleColor.Cyan;
                                 break;
+                        case 6:
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            break;
                             default:
                                 Console.ForegroundColor = ConsoleColor.Red;
                                 break;
@@ -377,6 +513,9 @@ namespace shopík
                                 break;
                             case 5:
                                 Console.ForegroundColor = ConsoleColor.Cyan;
+                                break;
+                            case 6:
+                                Console.ForegroundColor = ConsoleColor.Red;
                                 break;
                             default:
                                 Console.ForegroundColor = ConsoleColor.Red;
@@ -413,6 +552,9 @@ namespace shopík
                             case 5:
                                 Console.ForegroundColor = ConsoleColor.Cyan;
                                 break;
+                            case 6:
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                break;
                             default:
                                 Console.ForegroundColor = ConsoleColor.Red;
                                 break;
@@ -445,6 +587,9 @@ namespace shopík
                             break;
                         case 5:
                             Console.ForegroundColor = ConsoleColor.Cyan;
+                            break;
+                        case 6:
+                            Console.ForegroundColor = ConsoleColor.Red;
                             break;
                         default:
                             Console.ForegroundColor = ConsoleColor.Red;
@@ -515,6 +660,9 @@ namespace shopík
                             case 5:
                                 Console.ForegroundColor = ConsoleColor.Cyan;
                                 break;
+                            case 6:
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                break;
                             default:
                                 Console.ForegroundColor = ConsoleColor.Red;
                                 break;
@@ -524,6 +672,7 @@ namespace shopík
                     }
                     Console.WriteLine("     ");
                 }
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         //ukradenej z mýho jinýho projektu. Jdou s ním dělat menu či dialogy, je super
